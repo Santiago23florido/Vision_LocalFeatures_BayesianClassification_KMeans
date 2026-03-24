@@ -1,8 +1,8 @@
-\section{\textbf{Classification de caract\'eristiques locales}}
+\section{\underline{\textbf{Classification de caract\'eristiques locales}}}
 
 Dans la suite du TP, nous avons choisi de traiter le probl\`eme \textit{Visages} de la base d'images Essex. L'objectif g\'en\'eral est d'isoler les pixels de la peau du reste de l'image, afin de localiser pr\'ecis\'ement le visage sur l'image \`a partir d'une classification de caract\'eristiques locales.
 
-\subsection{\textbf{Classification bayésienne des pixels}}
+\subsection{\underline{\textbf{Classification bayésienne des pixels}}}
 
 %TODO: Reducri cantidad de texto, dejar lo verdaderamente importante de esta seccion
 
@@ -12,7 +12,7 @@ Conform\'ement \`a la section 3.1 du sujet, on commence par visualiser les compo
 
 Dans notre probl\`eme \textit{Visages}, cette approche revient \`a distinguer principalement les pixels de peau des pixels de non-peau. La classe positive correspond donc aux zones du visage que l'on souhaite extraire, tandis que la classe n\'egative regroupe l'arri\`ere-plan, les cheveux, les v\^etements et les autres parties de l'image. L'objectif est d'obtenir une segmentation suffisamment pr\'ecise pour localiser le visage de mani\`ere fiable.
 
-\subsubsection{\textbf{Analyse des couleurs}}
+\subsubsection{\underline{\textbf{Analyse des couleurs}}}
 
 Afin d'\'evaluer la s\'eparabilit\'e visuelle entre la peau et le non-peau avant 
 l'apprentissage, nous avons ex\'ecut\'e le script \texttt{Display\_Components.py} 
@@ -40,7 +40,7 @@ L'espace YCrCb est le plus prometteur pour ce probl\`eme. La composante \(Y\) ca
 
 En cons\'equence, YCrCb constitue le meilleur point de d\'epart pour construire un bon mod\`ele de d\'etection dans notre cas. Il existe cependant des opportunit\'es claires pour enrichir l'espace d'observation avec des caract\'eristiques locales personnalis\'ees. Une premi\`ere piste consiste \`a combiner \(Cb\) et \(Cr\) avec une mesure de structure locale, par exemple le gradient de \(Y\), afin d'introduire \`a la fois l'information de couleur de peau et l'information de contour. Une autre piste est d'utiliser des moyennes locales, des \'ecarts-types sur fen\^etre, ou des descripteurs de texture locale pour mieux distinguer la peau des cheveux, des ombres et de l'arri\`ere-plan. Cette id\'ee est coh\'erente avec l'extension \texttt{cbcr\_grad} d\'ej\`a pr\'esente dans le code, qui combine \(Cb\), \(Cr\) et \(|\nabla Y|\) pour enrichir la repr\'esentation locale des pixels.
 
-\subsubsection{\textbf{Propres caractéristiques locales}}
+\subsubsection{\underline{\textbf{Propres caractéristiques locales}}}
 
 Pour aller au-del\`a de l'utilisation des seules composantes de couleur,
  nous avons ajout\'e une caract\'eristique locale de type 
@@ -64,7 +64,12 @@ Les composantes \(Cb\) et \(Cr\) gardent une bonne coh\'erence sur les zones de 
 
 Cette caract\'eristique est plus favorable \`a un mod\`ele bay\'esien de d\'etection peau / non-peau, car elle aide \`a mieux distinguer les r\'egions ambigu\"es o\`u la couleur seule ne suffit pas, en particulier sur les fronti\`eres et dans les zones partiellement ombr\'ees. Sa limite est que le gradient r\'eagit aussi aux ombres, \`a certaines textures et aux accessoires. En pratique, cela signifie que les exemples n\'egatifs utilis\'es pendant l'apprentissage doivent couvrir non seulement le fond, mais aussi les cheveux, les yeux et les zones sombres du visage, afin d'\'eviter qu'un contour marqu\'e soit confondu avec une zone de peau.
 
-\subsubsection{\textbf{Modification du mod\`ele d'entra\^inement}}
+\subsubsection{\underline{\textbf{Pourquoi le descripteur \eqref{eq:compact_descriptor} n'a-t-il pas été choisi ?}}}
+
+Le descripteur d\'efini par l'\'equation~\eqref{eq:compact_descriptor} est th\'eoriquement plus riche et potentiellement plus discriminant que \texttt{cbcr\_grad}, car il combine l'information chromatique avec plusieurs caract\'eristiques g\'eom\'etriques calcul\'ees \`a deux \'echelles. Il n'a cependant pas \'et\'e impl\'ement\'e ni \'evalu\'e exp\'erimentalement dans ce travail. Dans le cadre retenu ici, \texttt{cbcr\_grad} constitue donc un compromis plus simple et plus op\'erationnel : il n'utilise que trois variables \((Cb, Cr, |\nabla Y|)\), alors que \eqref{eq:compact_descriptor} comporte huit composantes. Cette augmentation de dimension complexifie l'apprentissage bay\'esien, en particulier pour des mod\`eles simples comme \texttt{GaussianNB}, et accro\^it \`a la fois le besoin de normalisation, le risque de surapprentissage et la difficult\'e d'estimer correctement les param\`etres \`a partir d'un nombre limit\'e d'images annot\'ees.
+
+Par ailleurs, plusieurs variables d\'eriv\'ees pr\'esentes dans \eqref{eq:compact_descriptor} sont corr\'el\'ees, ce qui complique encore leur exploitation par un mod\`ele bay\'esien simple. Enfin, un descripteur plus riche ne corrige pas \`a lui seul une erreur de supervision : si l'annotation manuelle des RoI est impr\'ecise ou incompl\`ete, cette erreur humaine se propage au mod\`ele quelle que soit la qualit\'e th\'eorique du vecteur d'observation. Le choix de \texttt{cbcr\_grad} ne doit donc pas \^etre compris comme la preuve qu'il est sup\'erieur \`a \eqref{eq:compact_descriptor}, mais comme la s\'election d'un descripteur plus adapt\'e au protocole exp\'erimental effectivement mis en oeuvre dans ce rapport.
+\subsubsection{\underline{\textbf{Modification du mod\`ele d'entra\^inement}}}
 
 Le script \texttt{Bayes\_Model\_Training.py} a \'et\'e adapt\'e pour exploiter \texttt{cbcr\_grad} comme espace d'observation par d\'efaut. L'interface accepte d\'esormais une ou plusieurs images d'apprentissage en argument positionnel, ce qui permet soit de conserver le cas simple \`a une seule image, soit d'agr\'eger des annotations provenant de plusieurs visages avant l'estimation du mod\`ele bay\'esien. L'argument \texttt{--test-image} reste optionnel et, s'il n'est pas fourni, la premi\`ere image d'apprentissage est utilis\'ee comme image de test.
 
@@ -75,7 +80,7 @@ Le flux d'annotation supervis\'ee a \'egalement \'et\'e \'etendu \`a plusieurs i
 Pour le protocole recommand\'e dans ce rapport, nous sugg\'erons d'annoter \texttt{img/Essex\_Faces/94/asamma.19.jpg} comme image d'apprentissage, puis de tester le mod\`ele appris sur \texttt{img/Essex\_Faces/94/ajones.19.jpg}, \texttt{img/Essex\_Faces/94/asheal.18.jpg}
 et \texttt{img/Essex\_Faces/96/acatsa.17.jpg}. Un jeu d'annotations raisonnable consiste \`a s\'electionner environ 5 \`a 8 RoI de peau et 5 \`a 8 RoI de non-peau, en veillant \`a inclure parmi les n\'egatifs le fond, les cheveux, les yeux, les sourcils et les zones d'ombre. Ce choix limite le risque que la composante de gradient favorise \`a tort des contours marqu\'es qui ne correspondent pas \`a la peau.
 
-\subsubsection{\textbf{Résultats du modèle bayésien gaussien multidimensionnel}}
+\subsubsection{\underline{\textbf{Résultats du modèle bayésien gaussien multidimensionnel}}}
 
 \begin{figure*}[!t]
 \centering
@@ -121,7 +126,7 @@ Le comportement du cas C permet de mieux comprendre cette limite. L'introduction
 
 En conclusion, ces r\'esultats montrent que \texttt{cbcr\_grad} constitue bien une am\'elioration par rapport \`a une repr\'esentation purement colorim\'etrique, car il combine l'information de peau et l'information de contour. N\'eanmoins, une seule image d'apprentissage et une seule it\'eration d'annotation restent insuffisantes pour obtenir une g\'en\'eralisation robuste sur des images plus vari\'ees. L'am\'elioration la plus naturelle ne serait donc pas d'abandonner ce descripteur, mais d'augmenter la diversit\'e des images d'apprentissage et de couvrir davantage de cas n\'egatifs difficiles pendant l'annotation.
 
-\subsubsection{\textbf{Résultats du modèle bayésien gaussien naive}}
+\subsubsection{\underline{\textbf{Résultats du modèle bayésien gaussien naive}}}
 
 \begin{figure*}[!t]
 \centering
@@ -162,3 +167,99 @@ Dans le cas C, le mod\`ele na\"if donne un r\'esultat nettement meilleur que le 
 Il est important de pr\'eciser que le caract\`ere ``na\"if'' du mod\`ele ne signifie pas une absence de corr\'elation entre les pixels de l'image. L'hypoth\`ese porte sur l'ind\'ependance conditionnelle des composantes du vecteur d'observation, c'est-\`a-dire ici \(Cb\), \(Cr\) et \(|\nabla Y|\), \`a l'int\'erieur d'une m\^eme classe. Le mod\`ele gaussien multidimensionnel, au contraire, prend explicitement en compte les corr\'elations entre ces composantes.
 
 En comparant les deux approches, le mod\`ele gaussien na\"if pr\'esente plusieurs avantages : il est plus simple, il semble moins sensible \`a un surapprentissage de corr\'elations accidentelles, et il se montre plus robuste dans certains cas de changement de domaine comme \texttt{acatsa.17}. Il peut aussi r\'eduire certains faux positifs, comme sur les v\^etements dans le cas A. En revanche, il perd l'information sur les corr\'elations r\'eelles entre \(Cb\), \(Cr\) et \(|\nabla Y|\), ce qui peut limiter sa pr\'ecision lorsque ces d\'ependances sont effectivement discriminantes. On en conclut qu'aucun des deux mod\`eles ne domine syst\'ematiquement l'autre : avec une seule image d'apprentissage, le mod\`ele na\"if peut mieux g\'en\'eraliser, tandis que le mod\`ele gaussien multidimensionnel peut mieux exploiter la structure des donn\'ees lorsque les statistiques de test restent proches de celles observ\'ees \`a l'entra\^inement.
+
+\subsection{\underline{\textbf{Classification non supervisée des pixels par K-Means}}}
+
+Par rapport \`a l'approche bay\'esienne supervis\'ee \'etudi\'ee pr\'ec\'edemment, K-Means constitue une alternative non supervis\'ee int\'eressante pour la segmentation de la peau. Son principal avantage est qu'il ne repose pas sur une annotation manuelle pr\'ealable des pixels : il r\'eduit donc la charge de supervision et limite les erreurs humaines li\'ees au choix des RoI d'apprentissage. En contrepartie, les groupes obtenus par clustering ne correspondent pas n\'ecessairement \`a des classes s\'emantiques directement exploitables comme \textit{peau} et \textit{non-peau}. Selon l'espace d'observation choisi, l'algorithme peut aussi produire des partitions davantage li\'ees \`a l'illumination, au fond ou aux contrastes locaux qu'\`a la structure du visage elle-m\^eme. C'est pourquoi une phase d'exp\'erimentation est n\'ecessaire, afin d'identifier l'espace d'observation et le nombre de clusters les plus pertinents avant de tirer des conclusions sur l'int\'er\^et pratique de cette approche.
+
+\subsubsection{\underline{\textbf{Protocole expérimental}}}
+
+Le script \texttt{KMeans\_Clustering.py} a d'abord \'et\'e une d\'emonstration minimale du clustering sur une image unique en espace BGR. Il a ensuite \'et\'e adapt\'e pour devenir un outil d'exp\'erimentation reproductible, mieux align\'e sur les besoins du TP. L'interface accepte maintenant une image d'apprentissage, une image de test optionnelle, le choix de l'espace d'observation, le nombre de classes \(K\), la s\'election manuelle des clusters interpr\'et\'es comme peau, un r\'epertoire de sortie et un mode sans affichage. Le point de d\'epart retenu dans le script est \texttt{ycrcb} avec \(K=6\), mais ce choix doit justement \^etre valid\'e par les exp\'eriences.
+
+L'extraction des caract\'eristiques a \'et\'e unifi\'ee avec le module \texttt{features.py}, ce qui permet de comparer dans un m\^eme cadre les espaces \texttt{rgb}, \texttt{hsv}, \texttt{ycrcb} et le descripteur local \texttt{cbcr\_grad}. Cette unification garantit que les vecteurs d'observation manipul\'es par K-Means sont construits de mani\`ere coh\'erente avec les autres scripts du projet. Dans le cas particulier de \texttt{cbcr\_grad}, une normalisation interne fond\'ee uniquement sur l'image d'apprentissage est appliqu\'ee avant le clustering et la pr\'ediction, afin d'\'eviter que la composante \(|\nabla Y|\), de plus grande amplitude, ne domine artificiellement la distance euclidienne.
+
+Le flux de calcul a lui aussi \'et\'e \'etendu. Le mod\`ele K-Means est appris sur l'image \texttt{train}, puis les m\^emes centres de clusters sont r\'eutilis\'es pour pr\'edire les labels sur l'image \texttt{test}, ce qui rend la comparaison inter-images coh\'erente. Les sorties sont sauvegard\'ees automatiquement dans un r\'epertoire de la forme \texttt{outputs/kmeans/<test\_stem>/} puis \texttt{<features>\_k<k>\_train\_<train\_stem>/}. On y retrouve notamment \texttt{train\_labels.png}, \texttt{test\_labels.png}, \texttt{centers.json} et \texttt{metadata.json}. Lorsque les identifiants des clusters de peau sont fournis, le script enregistre aussi les masques binaires et les superpositions correspondantes pour l'image d'apprentissage et l'image de test.
+
+Le protocole exp\'erimental suit donc deux passes compl\'ementaires. Dans un premier temps, on observe les cartes de labels et les centres de clusters afin d'identifier quels groupes semblent correspondre \`a la peau. Dans un second temps, on relance le script en indiquant manuellement les identifiants de clusters retenus pour produire les masques de peau et comparer les r\'esultats selon l'espace d'observation et le nombre de classes. Ces étapes sont presentées dans la table \ref{tab:kmeans_protocol}.
+
+\begin{table*}[!t]
+\centering
+\scriptsize
+\caption{Protocole exp\'erimental propos\'e pour l'\'evaluation de K-Means. La premi\`ere \'etape sert \`a choisir le meilleur espace d'observation, la deuxi\`eme \`a ajuster le nombre de classes \(K\), et la troisi\`eme \`a \'evaluer la capacit\'e de g\'en\'eralisation sur des visages non utilis\'es pour l'apprentissage.}
+\label{tab:kmeans_protocol}
+\begin{tabular}{|p{2.6cm}|p{1.9cm}|p{1.9cm}|p{2.8cm}|p{1.2cm}|p{5.4cm}|}
+\hline
+\textbf{Phase} & \textbf{Train} & \textbf{Test} & \textbf{Espace d'observation} & \textbf{K} & \textbf{Objectif} \\
+\hline
+Comparaison initiale & \texttt{asamma.19} & \texttt{asamma.19} & \texttt{rgb} & 6 & Comparer la s\'eparabilit\'e obtenue avec RGB. \\
+\hline
+Comparaison initiale & \texttt{asamma.19} & \texttt{asamma.19} & \texttt{hsv} & 6 & Comparer la s\'eparabilit\'e obtenue avec HSV. \\
+\hline
+Comparaison initiale & \texttt{asamma.19} & \texttt{asamma.19} & \texttt{ycrcb} & 6 & Comparer la s\'eparabilit\'e obtenue avec YCrCb. \\
+\hline
+Comparaison initiale & \texttt{asamma.19} & \texttt{asamma.19} & \texttt{cbcr\_grad} & 6 & Comparer la s\'eparabilit\'e obtenue avec le descripteur local enrichi. \\
+\hline
+Choix de \(K\) & \texttt{asamma.19} & \texttt{asamma.19} & meilleur espace & 4, 6, 8 & S\'electionner le nombre de clusters le plus pertinent. \\
+\hline
+G\'en\'eralisation & \texttt{asamma.19} & \texttt{ajones.19} & meilleur espace & meilleur \(K\) & Tester un cas proche de l'image d'apprentissage. \\
+\hline
+G\'en\'eralisation & \texttt{asamma.19} & \texttt{acatsa.17} & meilleur espace & meilleur \(K\) & Tester un cas plus diff\'erent et \'evaluer la robustesse. \\
+\hline
+\end{tabular}
+\end{table*}
+
+Ce protocole permet de s\'eparer clairement trois questions. La premi\`ere est le choix du meilleur espace d'observation pour isoler la peau sans supervision. La deuxi\`eme est l'influence du nombre de classes sur la fragmentation ou, au contraire, la fusion excessive des r\'egions de peau et de non-peau. La troisi\`eme est la capacit\'e du mod\`ele appris sur \texttt{asamma.19} \`a conserver une interpr\'etation coh\'erente des clusters lorsqu'il est appliqu\'e \`a \texttt{ajones.19} puis \`a \texttt{acatsa.17}, deux cas de g\'en\'eralisation de difficult\'e diff\'erente.
+
+\subsubsection{\underline{\textbf{Comparaison initiale}}}
+
+La comparaison initiale a \'et\'e r\'ealis\'ee avec \texttt{train = test = asamma.19} et \(K = 6\), afin d'\'evaluer la qualit\'e intrins\`eque des regroupements obtenus sur une image unique avant toute g\'en\'eralisation. Pour chaque espace d'observation, les clusters de peau ont \'et\'e choisis manuellement \`a partir de \texttt{train\_labels.png} et \texttt{centers.json}. Les groupes retenus sont les suivants : \texttt{rgb} avec les clusters \(\{2,3,5\}\), \texttt{hsv} avec \(\{0,1,3\}\), \texttt{ycrcb} avec \(\{1,3,4\}\), et \texttt{cbcr\_grad} avec \(\{2,3\}\). Cette premi\`ere \'etape sert donc \`a comparer la lisibilit\'e des partitions et \`a estimer si les zones de peau forment ou non des groupes suffisamment coh\'erents pour \^etre exploit\'es dans la suite.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.24\textwidth]{../../img/Essex_Faces/94/asamma.19.jpg}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/rgb_k6_train_asamma.19/train_labels.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/rgb_k6_train_asamma.19/train_skin_mask.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/rgb_k6_train_asamma.19/train_skin_overlay.png}
+\caption{Cas RGB sur \texttt{asamma.19.jpg}. De gauche \`a droite : image originale, labels K-Means, masque des clusters interpr\'et\'es comme peau et superposition finale.}
+\label{fig:kmeans_rgb_initial}
+\end{figure*}
+
+Le cas RGB est surprenamment bon et reste relativement proche du comportement obtenu avec YCrCb, m\^eme si la d\'etection est un peu moins nette dans les d\'etails fins. Sur cette image particuli\`ere, le contraste global entre le fond vert, les cheveux sombres et les zones de peau suffit d\'ej\`a \`a produire des groupes utiles dans l'espace \((R,G,B)\). En revanche, RGB m\'elange directement luminance et chrominance, ce qui rend les clusters plus sensibles aux ombres et aux variations d'\'eclairage \`a l'int\'erieur du visage. Les bords des cheveux et les boucles d'oreilles sont ainsi parfois absorb\'es dans la peau, car leurs couleurs locales ou certains pixels de transition restent proches de celles de r\'egions cutan\'ees dans cet espace. Un raffinement peut passer par un \(K\) plus \'elev\'e pour s\'eparer certaines zones ambigu\"es, mais aussi par des descripteurs plus discriminants, car la seule distance euclidienne de K-Means ne garantit pas une s\'eparation s\'emantique parfaite.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.24\textwidth]{../../img/Essex_Faces/94/asamma.19.jpg}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/hsv_k6_train_asamma.19/train_labels.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/hsv_k6_train_asamma.19/train_skin_mask.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/hsv_k6_train_asamma.19/train_skin_overlay.png}
+\caption{Cas HSV sur \texttt{asamma.19.jpg}. De gauche \`a droite : image originale, labels K-Means, masque des clusters interpr\'et\'es comme peau et superposition finale.}
+\label{fig:kmeans_hsv_initial}
+\end{figure*}
+
+Le cas HSV est le moins convaincant des quatre. Le masque est tr\`es bruit\'e et fait appara\^itre plusieurs petites zones isol\'ees class\'ees comme peau alors qu'elles ne correspondent pas \`a des r\'egions cutan\'ees coh\'erentes. L'explication la plus probable est que la composante \(H\) devient instable dans les zones sombres ou faiblement satur\'ees, exactement comme on l'avait d\'ej\`a observ\'e pendant l'analyse exploratoire des composantes. De plus, la distance euclidienne appliqu\'ee directement sur \((H,S,V)\) n'est pas id\'eale, car la teinte est une variable circulaire et non une grandeur lin\'eaire classique. Cette combinaison conduit K-Means \`a fragmenter davantage les r\'egions de peau et \`a introduire des faux positifs dispers\'es, ce qui explique le caract\`ere tr\`es bruit\'e du r\'esultat.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.24\textwidth]{../../img/Essex_Faces/94/asamma.19.jpg}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/ycrcb_k6_train_asamma.19/train_labels.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/ycrcb_k6_train_asamma.19/train_skin_mask.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/ycrcb_k6_train_asamma.19/train_skin_overlay.png}
+\caption{Cas YCrCb sur \texttt{asamma.19.jpg}. De gauche \`a droite : image originale, labels K-Means, masque des clusters interpr\'et\'es comme peau et superposition finale.}
+\label{fig:kmeans_ycrcb_initial}
+\end{figure*}
+
+Le cas YCrCb appara\^it comme le meilleur de cette comparaison initiale. La peau y est mieux distingu\'ee, avec une segmentation plus homog\`ene et davantage de d\'etail sur le visage. Cette qualit\'e s'explique par la s\'eparation explicite entre la luminance \(Y\) et les composantes de chrominance \(Cr\) et \(Cb\), ce qui permet \`a K-Means de mieux regrouper les pixels cutan\'es malgr\'e les variations d'\'eclairage internes. Le visage reste ainsi plus coh\'erent tout en conservant des structures fines plus lisibles. On observe encore quelques confusions au niveau du bord des cheveux et des boucles d'oreilles, car K-Means ne tient compte ni du contexte spatial ni d'une connaissance s\'emantique de l'objet \`a segmenter : il ne voit que la proximit\'e des pixels dans l'espace d'observation. Un raffinement pourra donc passer par un \(K\) plus \'elev\'e, mais aussi par des descripteurs compl\'ementaires ou par un post-traitement spatial.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.24\textwidth]{../../img/Essex_Faces/94/asamma.19.jpg}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/cbcr_grad_k6_train_asamma.19/train_labels.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/cbcr_grad_k6_train_asamma.19/train_skin_mask.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/cbcr_grad_k6_train_asamma.19/train_skin_overlay.png}
+\caption{Cas \texttt{cbcr\_grad} sur \texttt{asamma.19.jpg}. De gauche \`a droite : image originale, labels K-Means, masque des clusters interpr\'et\'es comme peau et superposition finale.}
+\label{fig:kmeans_cbcrgrad_initial}
+\end{figure*}
+
+Le descripteur \texttt{cbcr\_grad}, pourtant prometteur dans le cadre bay\'esien supervis\'e, est ici moins convaincant avec K-Means. Le masque n'est pas uniforme : certaines zones de peau ne sont pas reconnues comme telles, et de petits trous de non-peau apparaissent \`a l'int\'erieur m\^eme du visage. La raison la plus probable est que le gradient, m\^eme normalis\'e, introduit une information de structure locale qui tend \`a scinder la peau selon l'intensit\'e des contours, des ombres et des transitions internes, plut\^ot que de regrouper toutes les zones cutan\'ees sur la seule base de leur chrominance. Dans un mod\`ele bay\'esien supervis\'e, cette information peut \^etre exploit\'ee positivement parce que l'apprentissage apprend quelles variations de gradient restent compatibles avec la peau. En revanche, dans un clustering non supervis\'e, K-Means ne dispose d'aucune information de classe et fragmente plus facilement la peau lorsqu'elle pr\'esente des variations locales de contour ou d'\'eclairement.
+
+En synth\`ese, les quatre essais montrent que tous les espaces d'observation ne sont pas \'egalement adapt\'es \`a une segmentation non supervis\'ee de la peau. HSV est clairement le plus bruit\'e, \texttt{cbcr\_grad} fragmente trop la peau dans ce cadre non supervis\'e, et RGB donne un r\'esultat d\'ej\`a tr\`es honorable mais un peu moins fin et moins stable que YCrCb. Le meilleur compromis est obtenu avec YCrCb, qui pr\'eserve mieux l'homog\'en\'eit\'e du visage, conserve davantage de d\'etail utile et limite les faux positifs \`a des zones localement ambigu\"es. Pour cette raison, YCrCb sera retenu comme meilleur espace d'observation pour les prochaines \'etapes de l'exp\'erimentation K-Means, avant d'\'etudier plus finement l'effet du nombre de classes \(K\).

@@ -1,0 +1,92 @@
+[
+  {
+    "cluster_id": 0,
+    "center": {
+      "Y": 52.199092864990234,
+      "Cr": 130.1852264404297,
+      "Cb": 125.26207733154297
+    },
+    "train_pixel_count": 5302,
+    "test_pixel_count": 5302,
+    "display_bgr": [
+      35,
+      35,
+      255
+    ]
+  },
+  {
+    "cluster_id": 1,
+    "center": {
+      "Y": 214.76451110839844,
+      "Cr": 148.99087524414062,
+      "Cb": 119.14810180664062
+    },
+    "train_pixel_count": 2879,
+    "test_pixel_count": 2879,
+    "display_bgr": [
+      35,
+      255,
+      255
+    ]
+  },
+  {
+    "cluster_id": 2,
+    "center": {
+      "Y": 14.77932357788086,
+      "Cr": 127.87351989746094,
+      "Cb": 126.36786651611328
+    },
+    "train_pixel_count": 15149,
+    "test_pixel_count": 15149,
+    "display_bgr": [
+      35,
+      255,
+      35
+    ]
+  },
+  {
+    "cluster_id": 3,
+    "center": {
+      "Y": 91.20521545410156,
+      "Cr": 130.38685607910156,
+      "Cb": 122.80400848388672
+    },
+    "train_pixel_count": 4826,
+    "test_pixel_count": 4826,
+    "display_bgr": [
+      255,
+      255,
+      35
+    ]
+  },
+  {
+    "cluster_id": 4,
+    "center": {
+      "Y": 142.94784545898438,
+      "Cr": 142.32554626464844,
+      "Cb": 124.5628662109375
+    },
+    "train_pixel_count": 2116,
+    "test_pixel_count": 2116,
+    "display_bgr": [
+      255,
+      42,
+      35
+    ]
+  },
+  {
+    "cluster_id": 5,
+    "center": {
+      "Y": 148.14822387695312,
+      "Cr": 105.77685546875,
+      "Cb": 85.82952117919922
+    },
+    "train_pixel_count": 5728,
+    "test_pixel_count": 5728,
+    "display_bgr": [
+      255,
+      35,
+      248
+    ]
+  }
+]

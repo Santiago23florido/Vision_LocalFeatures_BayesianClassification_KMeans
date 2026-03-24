@@ -1,0 +1,92 @@
+[
+  {
+    "cluster_id": 0,
+    "center": {
+      "H": 142.33050537109375,
+      "S": 55.68820571899414,
+      "V": 71.20806121826172
+    },
+    "train_pixel_count": 6081,
+    "test_pixel_count": 6081,
+    "display_bgr": [
+      35,
+      35,
+      255
+    ]
+  },
+  {
+    "cluster_id": 1,
+    "center": {
+      "H": 8.927947998046875,
+      "S": 65.68433380126953,
+      "V": 213.3769073486328
+    },
+    "train_pixel_count": 2851,
+    "test_pixel_count": 2851,
+    "display_bgr": [
+      35,
+      255,
+      255
+    ]
+  },
+  {
+    "cluster_id": 2,
+    "center": {
+      "H": 45.725101470947266,
+      "S": 171.9127197265625,
+      "V": 29.47362518310547
+    },
+    "train_pixel_count": 5121,
+    "test_pixel_count": 5121,
+    "display_bgr": [
+      35,
+      255,
+      35
+    ]
+  },
+  {
+    "cluster_id": 3,
+    "center": {
+      "H": 161.0828094482422,
+      "S": 45.5251579284668,
+      "V": 203.64877319335938
+    },
+    "train_pixel_count": 2253,
+    "test_pixel_count": 2253,
+    "display_bgr": [
+      255,
+      255,
+      35
+    ]
+  },
+  {
+    "cluster_id": 4,
+    "center": {
+      "H": 25.789691925048828,
+      "S": 55.5895881652832,
+      "V": 28.85992431640625
+    },
+    "train_pixel_count": 13057,
+    "test_pixel_count": 13057,
+    "display_bgr": [
+      255,
+      42,
+      35
+    ]
+  },
+  {
+    "cluster_id": 5,
+    "center": {
+      "H": 46.39057540893555,
+      "S": 148.92185974121094,
+      "V": 170.4162139892578
+    },
+    "train_pixel_count": 6637,
+    "test_pixel_count": 6637,
+    "display_bgr": [
+      255,
+      35,
+      248
+    ]
+  }
+]

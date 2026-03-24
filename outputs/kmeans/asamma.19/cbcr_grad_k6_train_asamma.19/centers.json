@@ -1,0 +1,92 @@
+[
+  {
+    "cluster_id": 0,
+    "center": {
+      "Cb": 118.54717254638672,
+      "Cr": 132.374755859375,
+      "|grad(Y)|": 315.2511291503906
+    },
+    "train_pixel_count": 1534,
+    "test_pixel_count": 1534,
+    "display_bgr": [
+      35,
+      35,
+      255
+    ]
+  },
+  {
+    "cluster_id": 1,
+    "center": {
+      "Cb": 85.0853271484375,
+      "Cr": 105.60086822509766,
+      "|grad(Y)|": 20.659374237060547
+    },
+    "train_pixel_count": 5452,
+    "test_pixel_count": 5452,
+    "display_bgr": [
+      35,
+      255,
+      255
+    ]
+  },
+  {
+    "cluster_id": 2,
+    "center": {
+      "Cb": 129.59579467773438,
+      "Cr": 132.99180603027344,
+      "|grad(Y)|": 115.44454193115234
+    },
+    "train_pixel_count": 5465,
+    "test_pixel_count": 5465,
+    "display_bgr": [
+      35,
+      255,
+      35
+    ]
+  },
+  {
+    "cluster_id": 3,
+    "center": {
+      "Cb": 116.88345336914062,
+      "Cr": 149.1329345703125,
+      "|grad(Y)|": 66.65800476074219
+    },
+    "train_pixel_count": 3417,
+    "test_pixel_count": 3417,
+    "display_bgr": [
+      255,
+      255,
+      35
+    ]
+  },
+  {
+    "cluster_id": 4,
+    "center": {
+      "Cb": 104.70364379882812,
+      "Cr": 120.35624694824219,
+      "|grad(Y)|": 89.20700073242188
+    },
+    "train_pixel_count": 1918,
+    "test_pixel_count": 1918,
+    "display_bgr": [
+      255,
+      42,
+      35
+    ]
+  },
+  {
+    "cluster_id": 5,
+    "center": {
+      "Cb": 127.10858154296875,
+      "Cr": 128.84124755859375,
+      "|grad(Y)|": 20.42082977294922
+    },
+    "train_pixel_count": 18214,
+    "test_pixel_count": 18214,
+    "display_bgr": [
+      255,
+      35,
+      248
+    ]
+  }
+]
