@@ -1,0 +1,122 @@
+[
+  {
+    "cluster_id": 0,
+    "center": {
+      "Y": 75.26007080078125,
+      "Cr": 130.72268676757812,
+      "Cb": 125.5816421508789
+    },
+    "train_pixel_count": 4513,
+    "test_pixel_count": 10561,
+    "display_bgr": [
+      35,
+      35,
+      255
+    ]
+  },
+  {
+    "cluster_id": 1,
+    "center": {
+      "Y": 13.430160522460938,
+      "Cr": 127.78152465820312,
+      "Cb": 126.3957290649414
+    },
+    "train_pixel_count": 13933,
+    "test_pixel_count": 5357,
+    "display_bgr": [
+      35,
+      196,
+      255
+    ]
+  },
+  {
+    "cluster_id": 2,
+    "center": {
+      "Y": 152.86880493164062,
+      "Cr": 104.33454895019531,
+      "Cb": 84.97148132324219
+    },
+    "train_pixel_count": 4864,
+    "test_pixel_count": 0,
+    "display_bgr": [
+      35,
+      255,
+      145
+    ]
+  },
+  {
+    "cluster_id": 3,
+    "center": {
+      "Y": 219.17572021484375,
+      "Cr": 149.02304077148438,
+      "Cb": 118.65045166015625
+    },
+    "train_pixel_count": 2510,
+    "test_pixel_count": 1553,
+    "display_bgr": [
+      86,
+      255,
+      35
+    ]
+  },
+  {
+    "cluster_id": 4,
+    "center": {
+      "Y": 115.03399658203125,
+      "Cr": 137.40133666992188,
+      "Cb": 128.08740234375
+    },
+    "train_pixel_count": 2406,
+    "test_pixel_count": 2566,
+    "display_bgr": [
+      255,
+      255,
+      35
+    ]
+  },
+  {
+    "cluster_id": 5,
+    "center": {
+      "Y": 41.562320709228516,
+      "Cr": 129.72230529785156,
+      "Cb": 125.63691711425781
+    },
+    "train_pixel_count": 4720,
+    "test_pixel_count": 7584,
+    "display_bgr": [
+      255,
+      94,
+      35
+    ]
+  },
+  {
+    "cluster_id": 6,
+    "center": {
+      "Y": 165.16769409179688,
+      "Cr": 146.055908203125,
+      "Cb": 122.6696548461914
+    },
+    "train_pixel_count": 1453,
+    "test_pixel_count": 2330,
+    "display_bgr": [
+      255,
+      35,
+      138
+    ]
+  },
+  {
+    "cluster_id": 7,
+    "center": {
+      "Y": 111.712890625,
+      "Cr": 116.06602478027344,
+      "Cb": 94.23049926757812
+    },
+    "train_pixel_count": 1601,
+    "test_pixel_count": 6049,
+    "display_bgr": [
+      204,
+      35,
+      255
+    ]
+  }
+]

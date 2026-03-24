@@ -263,3 +263,93 @@ Le cas YCrCb appara\^it comme le meilleur de cette comparaison initiale. La peau
 Le descripteur \texttt{cbcr\_grad}, pourtant prometteur dans le cadre bay\'esien supervis\'e, est ici moins convaincant avec K-Means. Le masque n'est pas uniforme : certaines zones de peau ne sont pas reconnues comme telles, et de petits trous de non-peau apparaissent \`a l'int\'erieur m\^eme du visage. La raison la plus probable est que le gradient, m\^eme normalis\'e, introduit une information de structure locale qui tend \`a scinder la peau selon l'intensit\'e des contours, des ombres et des transitions internes, plut\^ot que de regrouper toutes les zones cutan\'ees sur la seule base de leur chrominance. Dans un mod\`ele bay\'esien supervis\'e, cette information peut \^etre exploit\'ee positivement parce que l'apprentissage apprend quelles variations de gradient restent compatibles avec la peau. En revanche, dans un clustering non supervis\'e, K-Means ne dispose d'aucune information de classe et fragmente plus facilement la peau lorsqu'elle pr\'esente des variations locales de contour ou d'\'eclairement.
 
 En synth\`ese, les quatre essais montrent que tous les espaces d'observation ne sont pas \'egalement adapt\'es \`a une segmentation non supervis\'ee de la peau. HSV est clairement le plus bruit\'e, \texttt{cbcr\_grad} fragmente trop la peau dans ce cadre non supervis\'e, et RGB donne un r\'esultat d\'ej\`a tr\`es honorable mais un peu moins fin et moins stable que YCrCb. Le meilleur compromis est obtenu avec YCrCb, qui pr\'eserve mieux l'homog\'en\'eit\'e du visage, conserve davantage de d\'etail utile et limite les faux positifs \`a des zones localement ambigu\"es. Pour cette raison, YCrCb sera retenu comme meilleur espace d'observation pour les prochaines \'etapes de l'exp\'erimentation K-Means, avant d'\'etudier plus finement l'effet du nombre de classes \(K\).
+
+\subsubsection{\underline{\textbf{Choix de K}}}
+
+La figure \ref{fig:kmeans_ycrcb_initial} correspond au cas YCrCb avec \(K=6\). Ce r\'esultat constitue d\'ej\`a une base solide : la peau est globalement bien d\'etect\'ee et le visage reste coh\'erent dans son ensemble. Cependant, comme indiqu\'e dans la comparaison initiale, des faux positifs persistent encore au niveau du bord des cheveux et des boucles d'oreilles. Le choix de \(K\) doit donc permettre de d\'eterminer si une partition plus grossi\`ere ou, au contraire, plus fine de l'espace YCrCb permet d'am\'eliorer cette s\'eparation.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.24\textwidth]{../../img/Essex_Faces/94/asamma.19.jpg}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/ycrcb_k4_train_asamma.19/train_labels.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/ycrcb_k4_train_asamma.19/train_skin_mask.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/ycrcb_k4_train_asamma.19/train_skin_overlay.png}
+\caption{Cas YCrCb avec \(K=4\) sur \texttt{asamma.19.jpg}. De gauche \`a droite : image originale, labels K-Means, masque des clusters interpr\'et\'es comme peau et superposition finale.}
+\label{fig:kmeans_ycrcb_k4}
+\end{figure*}
+
+Le cas \(K=4\) est clairement moins bon. Le masque fait appara\^itre davantage de r\'egions non cutan\'ees absorb\'ees par la peau, notamment une partie du fond et des zones proches des yeux. La raison la plus probable est qu'avec un nombre trop faible de clusters, K-Means fusionne des populations de pixels qui devraient rester s\'epar\'ees. L'espace YCrCb reste pertinent, mais \(K=4\) conduit ici \`a une sous-segmentation : la peau, certaines zones d'ombre, une partie du fond et des r\'egions faciales non cutan\'ees tombent plus facilement dans les m\^emes groupes faute de granularit\'e suffisante.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.24\textwidth]{../../img/Essex_Faces/94/asamma.19.jpg}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/ycrcb_k8_train_asamma.19/train_labels.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/ycrcb_k8_train_asamma.19/train_skin_mask.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/asamma.19/ycrcb_k8_train_asamma.19/train_skin_overlay.png}
+\caption{Cas YCrCb avec \(K=8\) sur \texttt{asamma.19.jpg}. De gauche \`a droite : image originale, labels K-Means, masque des clusters interpr\'et\'es comme peau et superposition finale.}
+\label{fig:kmeans_ycrcb_k8}
+\end{figure*}
+
+Le cas \(K=8\) est le meilleur des trois. La majorit\'e des r\'egions d\'etect\'ees comme peau correspondent effectivement \`a de la peau, et le probl\`eme du bord des cheveux class\'e comme peau est nettement r\'eduit. L'explication la plus probable est qu'un nombre plus \'elev\'e de clusters permet de s\'eparer plus finement des sous-groupes proches dans l'espace YCrCb. La distance euclidienne utilis\'ee par K-Means reste la m\^eme, mais l'augmentation de \(K\) fournit une partition plus fine de l'espace d'observation et distingue mieux les variations de luminance et de chrominance entre peau, cheveux, fond et accessoires.
+
+En comparant \(K=4\), \(K=6\) et \(K=8\), on observe donc une progression nette : \(K=4\) sous-segmente les donn\'ees, \(K=6\) fournit un compromis d\'ej\`a correct, et \(K=8\) s\'epare plus proprement les groupes pertinents pour cette image. Dans cette exp\'erimentation, le meilleur choix est donc \(K=8\). Ce r\'esultat ne doit pas \^etre interpr\'et\'e comme une loi g\'en\'erale valable pour toute image, mais il reste coh\'erent avec l'id\'ee th\'eorique selon laquelle un nombre de clusters plus \'elev\'e peut mieux s\'eparer des composantes proches lorsque l'espace d'observation choisi est d\'ej\`a adapt\'e \`a la t\^ache.
+
+\subsubsection{\underline{\textbf{Analyse de robustesse}}}
+
+Les exp\'eriences pr\'ec\'edentes ont conduit \`a retenir l'espace YCrCb et \(K=8\) comme meilleur compromis sur l'image \texttt{asamma.19}. Cela ne garantit cependant pas une bonne transf\'erabilit\'e vers d'autres images. Dans un sch\'ema strictement \textit{train-test}, K-Means n'est pas naturellement con\c{c}u pour apprendre une classe s\'emantique stable comme \textit{peau / non-peau} sur une image, puis la r\'eutiliser telle quelle sur une autre, car la distribution des pixels peut changer fortement d'une sc\`ene \`a l'autre. La difficult\'e n'est donc pas seulement le choix de \(K\), mais aussi la stabilit\'e de la signification des clusters lorsque l'image de test s'\'ecarte de l'image d'apprentissage.
+
+Une autre limite m\'ethodologique appara\^it imm\'ediatement. Si l'on applique K-Means ind\'ependamment \`a chaque image, il faut ensuite indiquer manuellement quels clusters correspondent \`a la peau, ce qui fait perdre une partie du caract\`ere r\'eellement non supervis\'e de l'approche. Les m\'etadonn\'ees obtenues dans nos essais illustrent bien ce point : pour \texttt{ajones.19}, les clusters retenus comme peau sont \(\{4,6\}\), alors que pour \texttt{acatsa.17}, ce sont \(\{0,5\}\). Le fait de devoir changer les identifiants d'une image \`a l'autre montre que la s\'emantique des clusters n'est pas stable ; K-Means regroupe des proximit\'es statistiques dans l'espace d'observation, et non des objets s\'emantiques invariants d'une sc\`ene \`a l'autre.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.24\textwidth]{../../img/Essex_Faces/94/ajones.19.jpg}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/ajones.19/ycrcb_k8_train_asamma.19/test_labels.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/ajones.19/ycrcb_k8_train_asamma.19/test_skin_mask.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/ajones.19/ycrcb_k8_train_asamma.19/test_skin_overlay.png}
+\caption{Cas \texttt{ajones.19} avec YCrCb et \(K=8\), en r\'eutilisant les centres appris sur \texttt{asamma.19}. De gauche \`a droite : image originale, labels K-Means, masque des clusters interpr\'et\'es comme peau et superposition finale.}
+\label{fig:kmeans_robust_ajones}
+\end{figure*}
+
+Le cas \texttt{ajones.19} (figure \ref{fig:kmeans_robust_ajones}) montre que la peau est encore partiellement d\'etect\'ee, ce qui rend le r\'esultat exploitable, mais insuffisant pour une segmentation fiable. Le visage principal reste globalement rep\'er\'e, cependant le masque se confond encore avec des \'el\'ements non cutan\'es, en particulier une partie du v\^etement. L'explication la plus probable est que cette image reste relativement proche de \texttt{asamma.19}, de sorte que certaines zones de peau sont encore projet\'ees vers des clusters comparables. En revanche, les v\^etements et certaines r\'egions sombres poss\`edent eux aussi des signatures YCrCb assez proches de celles de la peau apprise. Comme K-Means ne dispose ni d'un mod\`ele probabiliste de classe ni d'un contexte spatial, ces ambigu\"it\'es restent difficiles \`a lever.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.24\textwidth]{../../img/Essex_Faces/96/acatsa.17.jpg}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/acatsa.17/ycrcb_k8_train_asamma.19/test_labels.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/acatsa.17/ycrcb_k8_train_asamma.19/test_skin_mask.png}\hfill
+\includegraphics[width=0.24\textwidth]{../../outputs/kmeans/acatsa.17/ycrcb_k8_train_asamma.19/test_skin_overlay.png}
+\caption{Cas \texttt{acatsa.17} avec YCrCb et \(K=8\), en r\'eutilisant les centres appris sur \texttt{asamma.19}. De gauche \`a droite : image originale, labels K-Means, masque des clusters interpr\'et\'es comme peau et superposition finale.}
+\label{fig:kmeans_robust_acatsa}
+\end{figure*}
+
+Le cas \texttt{acatsa.17} (figure \ref{fig:kmeans_robust_acatsa}) se d\'egrade au contraire tr\`es fortement, au point que la segmentation devient peu fiable. Le fond et plusieurs r\'egions non cutan\'ees sont massivement absorb\'es dans la peau, ce qui d\'etruit la qualit\'e du r\'esultat final. Ce comportement s'explique naturellement par le changement de sc\`ene : le fond, l'illumination, le contraste global et la distribution des couleurs diff\`erent beaucoup plus de ceux de \texttt{asamma.19}. Les centres appris sur l'image d'entra\^inement ne repr\'esentent alors plus correctement la nouvelle distribution des pixels. Or K-Means repose uniquement sur des distances aux centres ; il est donc particuli\`erement sensible \`a ce changement de distribution.
+
+Ces deux exemples montrent que K-Means n'est pas vraiment recommand\'e comme mod\`ele \textit{train} \(\rightarrow\) \textit{test} pour ce probl\`eme si l'on cherche \`a transf\'erer directement des clusters de peau d'une image \`a l'autre. Une application image par image serait plus coh\'erente du point de vue du clustering, mais elle imposerait de d\'esigner manuellement, \`a chaque fois, quels clusters correspondent \`a la peau, ce qui r\'eduit fortement l'int\'er\^et d'un apprentissage non supervis\'e. Pour obtenir une meilleure robustesse, il faudrait apprendre sur un ensemble beaucoup plus large et plus vari\'e d'images, afin de limiter la sur-sp\'ecialisation observ\'ee ici. Cela ne suffirait pas \`a r\'esoudre tous les probl\`emes de g\'en\'eralisation, mais permettrait au moins d'\'eviter un mod\`ele qui sait surtout identifier tr\`es bien une seule image, \texttt{asamma.19}, et beaucoup moins bien les autres sc\`enes.
+
+\section{\underline{\textbf{Conclusion}}}
+
+Les r\'esultats obtenus dans ce travail montrent d'abord que le choix de l'espace d'observation joue un r\^ole central, quelle que soit la m\'ethode de classification consid\'er\'ee. Dans le cadre bay\'esien supervis\'e, l'introduction du descripteur \texttt{cbcr\_grad} a clairement am\'elior\'e la s\'eparation peau / non-peau par rapport \`a une repr\'esentation purement colorim\'etrique, en combinant chrominance et information de contour. Cette am\'elioration reste toutefois fortement conditionn\'ee par la qualit\'e de l'annotation manuelle et par la quantit\'e d'images d'apprentissage disponibles. Plus g\'en\'eralement, les d\'eveloppements th\'eoriques de la section pr\'ec\'edente sugg\`erent que des descripteurs encore plus riches, comme \eqref{eq:compact_descriptor}, pourraient apporter une information plus discriminante, mais leur int\'er\^et r\'eel devra \^etre confirm\'e par des exp\'erimentations futures.
+
+La comparaison entre les deux mod\`eles bay\'esiens a ensuite mis en \'evidence des comportements compl\'ementaires. Le mod\`ele gaussien multidimensionnel (QDA) exploite mieux la structure des donn\'ees lorsque l'image de test reste proche de l'image d'apprentissage, car il mod\'elise explicitement les corr\'elations entre composantes. Le mod\`ele gaussien na\"if (\texttt{GaussianNB}) est plus simple et parfois plus robuste sous changement de domaine, car son hypoth\`ese d'ind\'ependance agit comme une forme de r\'egularisation implicite. Aucun des deux ne domine donc syst\'ematiquement l'autre, mais les deux approches montrent qu'un apprentissage supervis\'e peut produire des r\'esultats coh\'erents \`a condition de disposer d'annotations suffisamment repr\'esentatives.
+
+K-Means a pour sa part fourni la segmentation la plus fine sur l'image de r\'ef\'erence \texttt{asamma.19}, en particulier avec l'espace YCrCb et \(K=8\). Sur ce cas local, la m\'ethode donne la meilleure pr\'ecision visuelle dans le d\'etail et la meilleure qualit\'e de contour. Cependant, cette performance reste essentiellement valable dans une analyse image par image. D\`es que l'on cherche \`a transf\'erer directement les clusters appris sur une autre image, la robustesse se d\'egrade nettement et la signification des clusters cesse d'\^etre stable. En outre, dans le protocole retenu ici, K-Means devient plus co\^uteux sur le plan op\'erationnel, car il faut recalculer le clustering, analyser les centres et souvent r\'einterpr\'eter manuellement les clusters de peau pour chaque nouvelle image.
+
+\begin{table*}[!t]
+\centering
+\scriptsize
+\caption{Synth\`ese comparative des m\'ethodes \'evalu\'ees dans ce rapport.}
+\label{tab:final_method_comparison}
+\begin{tabular}{|p{2.5cm}|p{3.3cm}|p{3.2cm}|p{2.7cm}|p{2.8cm}|}
+\hline
+\textbf{M\'ethode} & \textbf{Atouts observ\'es} & \textbf{Limites observ\'ees} & \textbf{Comportement exp\'erimental} & \textbf{Usage recommand\'e} \\
+\hline
+Bayes gaussien multidimensionnel (QDA) & Bonne exploitation des corr\'elations entre composantes ; bons r\'esultats sur des cas proches de l'apprentissage. & Sensible au surajustement avec une seule image ; plus fragile sous changement de domaine. & Bons quasi-succ\`es sur \texttt{ajones.19} et \texttt{asheal.18} ; plus faible sur \texttt{acatsa.17}. & Utile si les donn\'ees de test restent proches des donn\'ees annot\'ees. \\
+\hline
+Bayes gaussien na\"if (\texttt{GaussianNB}) & Mod\`ele plus simple ; parfois plus robuste au changement de domaine ; moins sensible aux corr\'elations accidentelles. & Perd l'information sur les d\'ependances r\'eelles entre variables. & Proche de QDA sur certains cas ; meilleur sur \texttt{acatsa.17}. & Bon compromis lorsque peu de donn\'ees annot\'ees sont disponibles. \\
+\hline
+K-Means & Meilleure finesse de segmentation sur l'image de r\'ef\'erence ; bon niveau de d\'etail avec YCrCb et \(K=8\) ; pas d'annotation de pixels pour le clustering initial. & Forte d\'ependance \`a l'image ; faible robustesse en \textit{train} \(\rightarrow\) \textit{test} ; n\'ecessite souvent de choisir manuellement les clusters de peau ; co\^ut op\'erationnel plus \'elev\'e dans ce protocole. & Excellent sur \texttt{asamma.19}, acceptable mais insuffisant sur \texttt{ajones.19}, mauvais sur \texttt{acatsa.17}. & Pertinent pour l'analyse locale d'une image ; moins adapt\'e \`a un syst\`eme transf\'erable sans adaptation. \\
+\hline
+\end{tabular}
+\end{table*}
+
+En conclusion, si l'on se limite au crit\`ere de pr\'ecision visuelle locale et de finesse de segmentation dans les exp\'eriences men\'ees ici, la m\'ethode la plus performante est K-Means avec YCrCb et \(K=8\). Ce constat ne signifie cependant pas que K-Means soit le meilleur choix pour un syst\`eme robuste de d\'etection appliqu\'e \`a de nouvelles images. Dans une perspective plus op\'erationnelle, un classifieur bay\'esien bien annot\'e, entra\^in\'e sur un lot beaucoup plus important d'images et couvrant une plus grande variabilit\'e de sc\`enes, pourrait offrir un meilleur compromis entre rapidit\'e, co\^ut de calcul, automatisation et g\'en\'eralisation. Autrement dit, K-Means appara\^it ici comme la m\'ethode la plus pr\'ecise pour l'analyse fine d'une image de r\'ef\'erence, tandis que l'approche bay\'esienne reste la plus prometteuse pour construire, \`a terme, un syst\`eme de segmentation plus rapide, plus stable et plus efficace.

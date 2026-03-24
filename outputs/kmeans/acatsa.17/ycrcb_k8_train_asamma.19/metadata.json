@@ -1,0 +1,28 @@
+{
+  "created_utc": "2026-03-24T21:11:40.794253+00:00",
+  "train_image": "img/Essex_Faces/94/asamma.19.jpg",
+  "test_image": "img/Essex_Faces/96/acatsa.17.jpg",
+  "features": "ycrcb",
+  "feature_names": [
+    "Y",
+    "Cr",
+    "Cb"
+  ],
+  "k": 8,
+  "skin_clusters": [
+    0,
+    5
+  ],
+  "train_image_shape": [
+    200,
+    180,
+    3
+  ],
+  "test_image_shape": [
+    196,
+    196,
+    3
+  ],
+  "cluster_centers_file": "centers.json",
+  "normalization": null
+}

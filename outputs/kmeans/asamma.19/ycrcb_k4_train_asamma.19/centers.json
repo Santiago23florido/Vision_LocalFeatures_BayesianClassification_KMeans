@@ -1,0 +1,62 @@
+[
+  {
+    "cluster_id": 0,
+    "center": {
+      "Y": 82.9067153930664,
+      "Cr": 131.39833068847656,
+      "Cb": 124.59858703613281
+    },
+    "train_pixel_count": 8126,
+    "test_pixel_count": 8126,
+    "display_bgr": [
+      35,
+      35,
+      255
+    ]
+  },
+  {
+    "cluster_id": 1,
+    "center": {
+      "Y": 18.530868530273438,
+      "Cr": 128.1302490234375,
+      "Cb": 126.28015899658203
+    },
+    "train_pixel_count": 17615,
+    "test_pixel_count": 17615,
+    "display_bgr": [
+      35,
+      255,
+      145
+    ]
+  },
+  {
+    "cluster_id": 2,
+    "center": {
+      "Y": 146.4862060546875,
+      "Cr": 111.38986206054688,
+      "Cb": 91.27570343017578
+    },
+    "train_pixel_count": 6899,
+    "test_pixel_count": 6899,
+    "display_bgr": [
+      255,
+      255,
+      35
+    ]
+  },
+  {
+    "cluster_id": 3,
+    "center": {
+      "Y": 208.19473266601562,
+      "Cr": 148.63433837890625,
+      "Cb": 119.85169982910156
+    },
+    "train_pixel_count": 3360,
+    "test_pixel_count": 3360,
+    "display_bgr": [
+      255,
+      35,
+      138
+    ]
+  }
+]
