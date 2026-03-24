@@ -1,0 +1,34 @@
+{
+  "created_utc": "2026-03-24T01:24:26.527806+00:00",
+  "test_image": "img/Essex_Faces/94/asheal.18.jpg",
+  "train_images": [
+    "img/Essex_Faces/94/asamma.19.jpg"
+  ],
+  "features": "cbcr_grad",
+  "feature_names": [
+    "Cb",
+    "Cr",
+    "|grad(Y)|"
+  ],
+  "model": "gnb",
+  "decision": "map",
+  "class_labels": {
+    "skin": 1,
+    "non_skin": -1
+  },
+  "roi_count": {
+    "skin": 8,
+    "non_skin": 9
+  },
+  "pixel_count": {
+    "skin": 11574,
+    "non_skin": 25870
+  },
+  "train_samples": 37444,
+  "feature_dimension": 3,
+  "train_label_distribution": {
+    "skin": 11574,
+    "non_skin": 25870
+  },
+  "train_image": "img/Essex_Faces/94/asamma.19.jpg"
+}

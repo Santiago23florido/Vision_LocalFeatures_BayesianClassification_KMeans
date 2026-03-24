@@ -1,0 +1,36 @@
+{
+  "created_utc": "2026-03-24T01:00:57.410566+00:00",
+  "test_image": "img/Essex_Faces/94/ajones.19.jpg",
+  "train_images": [
+    "img/Essex_Faces/94/asamma.19.jpg"
+  ],
+  "features": "cbcr_grad",
+  "feature_names": [
+    "Cb",
+    "Cr",
+    "|grad(Y)|"
+  ],
+  "model": "qda",
+  "decision": "map",
+  "class_labels": {
+    "skin": 1,
+    "non_skin": -1
+  },
+  "roi_count": {
+    "skin": 9,
+    "non_skin": 8
+  },
+  "pixel_count": {
+    "skin": 11656,
+    "non_skin": 31167
+  },
+  "train_samples": 42823,
+  "feature_dimension": 3,
+  "train_label_distribution": {
+    "skin": 11656,
+    "non_skin": 31167
+  },
+  "train_image": "img/Essex_Faces/94/asamma.19.jpg",
+  "trained_model_path": "outputs/bayes/asheal.18/cbcr_grad_qda_map/trained_model.pkl",
+  "loaded_from_trained": true
+}
